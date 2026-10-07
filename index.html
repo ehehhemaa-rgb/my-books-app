@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каталог книг</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 0 15px; background-color: #f9f9f9; }
+    h1 { text-align: center; color: #333; }
+    .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    input, select { padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px; flex: 1; }
+    .book-card { background: white; border: 1px solid #e0e0e0; padding: 15px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .book-title { font-weight: bold; font-size: 18px; color: #1a0dab; }
+    .book-author { color: #444; margin-top: 5px; font-size: 15px; }
+    .book-meta { color: #666; font-size: 13px; margin-top: 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>Каталог книг</h1>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Поиск по названию..." oninput="loadBooks()">
+    <select id="sortSelect" onchange="loadBooks()">
+      <option value="title_asc">Название (А-Я)</option>
+      <option value="title_desc">Название (Я-А)</option>
+      <option value="year_desc">Сначала новые</option>
+      <option value="year_asc">Сначала старые</option>
+    </select>
+  </div>
+
+  <div id="booksList">Загрузка данных...</div>
+
+  <script>
+    // Подставьте сюда свои данные из Supabase -> Project Settings -> API
+    const SUPABASE_URL = 'sb_publishable_M3AIK80uil6RWU-afcMovw_-aVb_q-5';
+    const SUPABASE_ANON_KEY = 'Ysb_secret_uRdOHh2xN78oCENc9uBF1g_yPm32a1p;
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function loadBooks() {
+      const search = document.getElementById('searchInput').value;
+      const sort = document.getElementById('sortSelect').value;
+
+      let query = supabaseClient
+        .from('books')
+        .select(`
+          id,
+          title,
+          publication_year,
+          genre,
+          authors ( name )
+        `);
+
+      if (search) {
+        query = query.ilike('title', `%${search}%`);
+      }
+
+      if (sort === 'title_asc') query = query.order('title', { ascending: true });
+      if (sort === 'title_desc') query = query.order('title', { ascending: false });
+      if (sort === 'year_desc') query = query.order('publication_year', { ascending: false });
+      if (sort === 'year_asc') query = query.order('publication_year', { ascending: true });
+
+      const { data: books, error } = await query;
+
+      const container = document.getElementById('booksList');
+      if (error) {
+        container.innerHTML = 'Ошибка загрузки: ' + error.message;
+        return;
+      }
+
+      if (!books || books.length === 0) {
+        container.innerHTML = 'Ничего не найдено';
+        return;
+      }
+
+      container.innerHTML = books.map(book => `
+        <div class="book-card">
+          <div class="book-title">${book.title}</div>
+          <div class="book-author">Автор: ${book.authors ? book.authors.name : 'Не указан'}</div>
+          <div class="book-meta">
+            Год: ${book.publication_year || '—'} | Жанр: ${book.genre || '—'}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    loadBooks();
+  </script>
+</body>
+</html>
