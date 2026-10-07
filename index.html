@@ -39,7 +39,7 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function loadBooks() {
-      const search = document.getElementById('searchInput').value;
+      const search = document.getElementById('searchInput').value.trim();
       const sort = document.getElementById('sortSelect').value;
 
       let query = supabaseClient
@@ -52,8 +52,8 @@
           authors ( name )
         `);
 
-      if (search && search.trim() !== '') {
-        query = query.ilike('title', `%${search.trim()}%`);
+      if (search !== '') {
+        query = query.ilike('title', `%${search}%`);
       }
 
       if (sort === 'title_asc') query = query.order('title', { ascending: true });
