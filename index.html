@@ -33,12 +33,10 @@
   <div id="booksList">Загрузка данных...</div>
 
   <script>
-   const SUPABASE_URL = 'https://wbfbljkqyyptbxmmmpcp.supabase.co';
-    
+    const SUPABASE_URL = 'https://wbfbljkqyyptbxmmmpcp.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_M3AIK80uil6RWU-afcMovw_-aVb_q-5';
-    
+
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
 
     async function loadBooks() {
       const search = document.getElementById('searchInput').value;
@@ -54,8 +52,8 @@
           authors ( name )
         `);
 
-      if (search) {
-        query = query.ilike('title', `%${search}%`);
+      if (search && search.trim() !== '') {
+        query = query.ilike('title', `%${search.trim()}%`);
       }
 
       if (sort === 'title_asc') query = query.order('title', { ascending: true });
