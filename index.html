@@ -33,9 +33,11 @@
   <div id="booksList">Загрузка данных...</div>
 
   <script>
-    // Подставьте сюда свои данные из Supabase -> Project Settings -> API
-    const SUPABASE_URL = 'sb_publishable_M3AIK80uil6RWU-afcMovw_-aVb_q-5';
-    const SUPABASE_ANON_KEY = 'Ysb_secret_uRdOHh2xN78oCENc9uBF1g_yPm32a1p;
+    // 1. Сюда вставьте Project URL (начинается с https:// и заканчивается на .supabase.co)
+    const SUPABASE_URL = 'https://ВАШ_ПРОЕКТ.supabase.co';
+    
+    // 2. Сюда вставьте ключ с пометкой anon public (длинная строка без пробелов)
+    const SUPABASE_ANON_KEY = 'ВАШ_ANON_PUBLIC_KEY';
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
